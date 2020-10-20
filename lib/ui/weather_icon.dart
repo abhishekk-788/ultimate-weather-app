@@ -22,6 +22,9 @@ String weatherIcon(String description){
     case "broken clouds":
         return "images/sl.svg";
         break;
+    case "snow":
+        return "images/sn.svg";
+        break;
     default:
         return "images/c.svg";
         break;

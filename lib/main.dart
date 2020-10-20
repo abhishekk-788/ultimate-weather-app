@@ -25,6 +25,9 @@ class _WeatherForecastState extends State<WeatherForecast> {
 
   Future<WeatherForecastModel> forecast;
   String _cityName = "Kolkata";
+  String hasError = '';
+
+  dynamic previousForecast;
 
   @override
   void initState() {
@@ -42,17 +45,23 @@ class _WeatherForecastState extends State<WeatherForecast> {
         resizeToAvoidBottomInset: false,
         body: Center(
           child: FutureBuilder<WeatherForecastModel>(
-            future: forecast,
-            builder: (BuildContext context, AsyncSnapshot<WeatherForecastModel> snapshot) {
-              if (snapshot.hasData) {
-                return screenView(context, snapshot);
+              future: forecast,
+              builder: (BuildContext context, AsyncSnapshot<WeatherForecastModel> snapshot) {
+                if(snapshot.hasError) {
+                  hasError = 'No such City Found !';
+                  return screenView(context, previousForecast);
+                }
+                else if (snapshot.hasData) {
+                  hasError = '';
+                  previousForecast = snapshot;
+                  return screenView(context, snapshot);
+                }
+                else {
+                  return Container(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
               }
-              else {
-                return Container(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-            }
           ),
         ),
       ),
@@ -86,31 +95,30 @@ class _WeatherForecastState extends State<WeatherForecast> {
       child: Column(
         children: [
 
-          citySearchScreen(context),
+          citySearchScreen(context, hasError),
 
           SizedBox(height: 65),
 
           /* Location */
           Text(
-            '$city, $country',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            )
+              '$city, $country',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              )
           ),
 
           /*Current Date Time */
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
             child: Text(
-              "${Util.getFormattedDate(date)}",
-              style: TextStyle(
-                color:Colors.white54,
-              )
+                "${Util.getFormattedDate(date)}",
+                style: TextStyle(
+                  color:Colors.white54,
+                )
             ),
           ),
-
           SizedBox(height: 15),
 
           /* Current Temperature in Celcius */
@@ -145,31 +153,30 @@ class _WeatherForecastState extends State<WeatherForecast> {
               width: 150,
               height: 30,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children:[
-                  SvgPicture.asset(
-                      'images/temperature.svg',
-                      height: 30,
-                      width: 30,
-                      color: Colors.white70
-                  ),
-                  SvgPicture.asset(
-                      'images/rain.svg',
-                      height: 30,
-                      width: 30,
-                      color: Colors.white70
-                  ),
-                  SvgPicture.asset(
-                      'images/Wind.svg',
-                      height: 30,
-                      width: 30,
-                      color: Colors.white70
-                  ),
-                ]
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children:[
+                    SvgPicture.asset(
+                        'images/temperature.svg',
+                        height: 30,
+                        width: 30,
+                        color: Colors.white70
+                    ),
+                    SvgPicture.asset(
+                        'images/rain.svg',
+                        height: 30,
+                        width: 30,
+                        color: Colors.white70
+                    ),
+                    SvgPicture.asset(
+                        'images/Wind.svg',
+                        height: 30,
+                        width: 30,
+                        color: Colors.white70
+                    ),
+                  ]
               ),
             ),
           ),
-
           SizedBox(height: 5),
 
           /* Rain Humidity and Wind Speed Values  */
@@ -191,7 +198,6 @@ class _WeatherForecastState extends State<WeatherForecast> {
               ),
             ),
           ),
-
           SizedBox(height: 50),
 
           /* BottomView where data of different Timeline are shown */
@@ -201,7 +207,7 @@ class _WeatherForecastState extends State<WeatherForecast> {
     );
   }
 
-  Widget citySearchScreen(BuildContext context) {
+  Widget citySearchScreen(BuildContext context, String hasError) {
     return Container(
       width:MediaQuery.of(context).size.width,
       height:MediaQuery.of(context).size.height / 5,
@@ -218,6 +224,17 @@ class _WeatherForecastState extends State<WeatherForecast> {
           Padding(
             padding: const EdgeInsets.only(left: 50.0, right: 50),
             child: textFieldView(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              hasError,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.redAccent[100],
+                fontWeight: FontWeight.w700,
+              )
+            ),
           ),
         ],
       ),

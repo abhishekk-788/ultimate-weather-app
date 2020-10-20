@@ -14,13 +14,16 @@ String getWeatherImages(String weatherDescription)
         return "images/background_lightcloud.png";
         break;
     case "overcast clouds":
-        return "images/background_overcastcloud.png";
+        return "images/background_overcastcloud.jpg";
         break;
     case "scattered clouds":
         return "images/background_brokencloud.jpg";
         break;
     case "broken clouds":
         return "images/background_brokencloud.jpg";
+        break;
+    case "broken clouds":
+        return "images/background_snow.jpg";
         break;
     default:
         return "images/background_day.jpg";
